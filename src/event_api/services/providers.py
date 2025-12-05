@@ -41,6 +41,10 @@ class EventbriteProvider(EventProvider):
         """Get Eventbrite location ID for a city"""
         city_key = city_name.lower().strip().replace(" ", "_")
         return self.location_ids.get(city_key)
+
+    def get_supported_cities(self):
+        """Get list of supported city names"""
+        return list(self.location_ids.keys())
     
     def _format_price(self, price_str: str, is_free: bool) -> str:
         """Format price string"""
@@ -214,14 +218,10 @@ class AllEventsProvider(EventProvider):
         # API key not required for this endpoint; kept for compatibility
         self.api_key = api_key
         self.url = "https://allevents.in/api/index.php/events/web/qs/search_v1"
-        self.geocoder = GeocodingService()
-        # Minimal cookie required by the endpoint (aligned with tests/test_allevents.py)
 
     def search(self, city, category="events", lat=None, lon=None):
 
         # Use provided coordinates or geocode city to improve accuracy
-        if lat is None or lon is None:
-            lat, lon = self.geocoder.get_coordinates(city)
         if lat is None or lon is None:
             print(f"AllEvents: Could not geocode city '{city}'")
             return []

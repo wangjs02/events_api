@@ -36,7 +36,7 @@ class UnifiedEventService:
 
         # 4. Fetch from Providers needing City Name
         print(f"Fetching AllEvents for {location_name}...")
-        all_events.extend(self.allevents.search(location_name, category))
+        all_events.extend(self.allevents.search(location_name, category, lat, lon))
         
         print(f"Fetching Ticketmaster for {location_name}...")
         all_events.extend(self.ticketmaster.search(location_name, category))

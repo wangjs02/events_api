@@ -1,7 +1,6 @@
 import requests
 from datetime import datetime
 import os
-from .geocoding import GeocodingService
 
 class EventProvider:
     def search(self, **kwargs):
@@ -218,10 +217,11 @@ class AllEventsProvider(EventProvider):
         self.geocoder = GeocodingService()
         # Minimal cookie required by the endpoint (aligned with tests/test_allevents.py)
 
-    def search(self, city, category="events"):
+    def search(self, city, category="events", lat=None, lon=None):
 
-        # Geocode city to improve accuracy
-        lat, lon = self.geocoder.get_coordinates(city)
+        # Use provided coordinates or geocode city to improve accuracy
+        if lat is None or lon is None:
+            lat, lon = self.geocoder.get_coordinates(city)
         if lat is None or lon is None:
             print(f"AllEvents: Could not geocode city '{city}'")
             return []

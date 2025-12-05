@@ -19,23 +19,58 @@ pip install event_api_service
 
 ## Quick Start
 
-### 1. Set up environment variables
+### Option 1: Direct Usage (Simplest) ⭐
 
-Create a `.env` file:
+No server needed! Just install and use:
+
+```python
+from event_api.services.scraper import UnifiedEventService
+
+# Create service instance
+service = UnifiedEventService()
+
+# Get events (works with Eventbrite without any API keys!)
+events = service.get_events("New York", "music")
+
+# Use the data
+for event in events:
+    print(f"{event['title']} - {event['source']}")
+```
+
+**That's it! No API keys required for basic usage with Eventbrite.**
+
+### Option 2: With Additional Data Sources
+
+For more results, set API keys for other providers:
+
+```python
+import os
+from event_api.services.scraper import UnifiedEventService
+
+# Optional: Add more data sources
+os.environ['TICKETMASTER_KEY'] = 'your_ticketmaster_key'
+os.environ['MEETUP_TOKEN'] = 'your_meetup_token'
+
+service = UnifiedEventService()
+events = service.get_events("San Francisco", "tech")
+```
+
+### Option 3: Run as API Server
+
+If you want to run it as a web service:
+
+**1. Create `.env` file:**
 
 ```bash
-# API Keys for Event Providers (optional, configure as needed)
+# Optional: Event provider API keys
 TICKETMASTER_KEY=your_ticketmaster_key
 MEETUP_TOKEN=your_meetup_token
-ALLEVENTS_KEY=your_allevents_key
-SERPAPI_KEY=your_serpapi_key
-PREDICTHQ_TOKEN=your_predicthq_token
 
-# API Key for this service
+# Required: Your API service key (set any secure string)
 API_KEY=your_secret_api_key
 ```
 
-### 2. Run the server
+**2. Create `server.py`:**
 
 ```python
 from dotenv import load_dotenv
@@ -48,9 +83,13 @@ if __name__ == '__main__':
     app.run(debug=True, port=5000)
 ```
 
-### 3. Make requests
+**3. Run and use:**
 
 ```bash
+# Start server
+python server.py
+
+# Make requests
 curl -H "x-api-key: your_secret_api_key" \
   "http://localhost:5000/api/v1/events?location=New York&category=music"
 ```
